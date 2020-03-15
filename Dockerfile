@@ -1,0 +1,5 @@
+FROM python:3
+ENV PYTHONUNBUFFERED 1
+COPY run.py /
+COPY settings.py /
+WORKDIR /

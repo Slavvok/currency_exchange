@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  currency_exchange:
+    build: ./
+    command: python run.py
+    ports:
+      - "5000:5000"
+    expose:
+      - "5000"
+    network_mode: host

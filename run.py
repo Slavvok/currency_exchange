@@ -68,4 +68,5 @@ class CurrencyExchangeHandler(BaseHTTPRequestHandler):
 
 if __name__ == "__main__":
     httpd = HTTPServer((settings.DEV_HOST, settings.DEV_PORT), CurrencyExchangeHandler)
+    sys.stderr.write(f"Started http server at http://{settings.DEV_HOST}:{settings.DEV_PORT}/\n")
     httpd.serve_forever()
