@@ -62,8 +62,8 @@ class CurrencyExchangeHandler(BaseHTTPRequestHandler):
                 r = urlopen(settings.SERVICE_URL.format(curr_from, curr_to))
                 data = json.loads(r.read().decode())
                 response = dict()
-                response['usd'] = number
-                response['rub'] = float(data['rates']['RUB']) * number
+                response[curr_from] = number
+                response[curr_to] = float(data['rates'][curr_to.upper()]) * number
                 self._set_headers(200, "%(message)s" % {"message": json.dumps(response)})
                 self.wfile.write(json.dumps(response).encode())
         except HTTPError:
