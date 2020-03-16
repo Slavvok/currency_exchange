@@ -4,6 +4,7 @@ import settings
 import sys
 from datetime import datetime
 from urllib.request import urlopen
+from urllib.error import HTTPError
 
 
 class CurrencyExchangeHandler(BaseHTTPRequestHandler):
@@ -13,6 +14,11 @@ class CurrencyExchangeHandler(BaseHTTPRequestHandler):
             self.log_message(message)
         self.send_header('Content-Type', 'application/json')
         self.end_headers()
+
+    def _send_error_403(self):
+        self._set_headers(403)
+        self.wfile.write(json.dumps({"error": "Forbidden", "code": 403,
+                                     "message": "Currently base currency could be only usd"}).encode())
 
     def _send_error_405(self):
         self._set_headers(405)
@@ -49,8 +55,6 @@ class CurrencyExchangeHandler(BaseHTTPRequestHandler):
         body = self.rfile.read(content_length)
         request = json.loads(body.decode())
         try:
-            if 'error' in request:
-                self.wfile.write(json.dumps(request).encode())
             if request:
                 curr_from = request['curr_from']
                 curr_to = request['curr_to']
@@ -62,8 +66,8 @@ class CurrencyExchangeHandler(BaseHTTPRequestHandler):
                 response['rub'] = float(data['rates']['RUB']) * number
                 self._set_headers(200, "%(message)s" % {"message": json.dumps(response)})
                 self.wfile.write(json.dumps(response).encode())
-        except Exception as e:
-            self._send_error_500(e)
+        except HTTPError:
+            self._send_error_403()
 
 
 if __name__ == "__main__":
